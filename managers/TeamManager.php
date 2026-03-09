@@ -1,9 +1,13 @@
 <?php 
 
-class HomeManager extends AbstractManager {
+class PlayerManager extends AbstractManager {
 
     public function __construct(){
         parent::__construct();
     }
-}
-    ?>
+
+    
+    }
+ 
+
+?>
