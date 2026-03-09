@@ -5,6 +5,15 @@
     <title>Document</title>
 </head>
 <body>
-    <main>Page Home</main>
+  <h2>Players</h2>
+<?php foreach ($data as $player): ?>
+
+<div>
+    <h3><?= $player["nickname"] ?></h3>
+    <img src="<?= $player["portrait_url"] ?>" width="100">
+    <p><?= $player["name"] ?></p>
+</div>
+<?php endforeach; ?>
+    </main>
 </body>
 </html>

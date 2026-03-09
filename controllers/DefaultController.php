@@ -3,15 +3,17 @@
 class DefaultController extends AbstractController
 {
 
-    public function home() : void {
-        $route = "home";
-        
-    
-        $manager = new PlayerManager();
-        $players = $manager->find3Players();
-        
-        $this->render("home", ["players" => $players]);
+ public function home(): void
+{
+    $manager = new PlayerManager();
+    $players = $manager->find3Players();
+
+    if (!$players) {
+        $players = [];
     }
+
+    $this->render("home", ["players" => $players]);
+}
         
     
     

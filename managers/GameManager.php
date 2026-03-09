@@ -72,5 +72,26 @@ class GameManager extends AbstractManager {
         return $games;
     }
     
+    
+    public function findLastGames(): array
+{
+    $sql = "
+        SELECT 
+            g.datetime,
+            t1.name AS team1,
+            t2.name AS team2
+        FROM games g
+        JOIN teams t1 ON g.team_1 = t1.id
+        JOIN teams t2 ON g.team_2 = t2.id
+        ORDER BY g.datetime DESC
+        LIMIT 3
+    ";
+
+    $query = $this->db->prepare($sql);
+    $query->execute();
+
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+    
 }
     ?>
