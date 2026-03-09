@@ -38,3 +38,5 @@ class Media
         $this->alt = $alt;
     }
 }
+
+?>
