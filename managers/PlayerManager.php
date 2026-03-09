@@ -65,6 +65,37 @@ $player = new Player( $result["nickname"],
 
     return $players;
 }
+
+    public function find3Players(array $players) : array {
+        
+        $query = $this->db->prepare("SELECT 
+            players.id AS player_id,
+            players.nickname,
+            media.url AS portrait_url,
+            teams.name AS team_name
+            FROM players
+             JOIN media ON players.portrait = media.id
+             JOIN teams ON players.team = teams.id");
+                                    
+        $query->execute();
+        
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $players = [];
+        
+        for(int $i = 0; $i <= 2; $i++) {
+            $players[] = new Player (
+            "id" => $result["player_id"],
+            "nickname" => $result["nickname"],
+            "portrait_url" => $result["portrait_url"],
+            "team_name" => $result["team_name"]
+            );
+        }
+        
+        return $players,
+        
+    } 
+    
     
 }
     ?>
