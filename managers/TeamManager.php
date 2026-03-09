@@ -1,6 +1,6 @@
 <?php 
 
-class PlayerManager extends AbstractManager {
+class TeamManager extends AbstractManager {
 
     public function __construct(){
         parent::__construct();
@@ -59,30 +59,16 @@ class PlayerManager extends AbstractManager {
         return $teams;
     }
     
-    // public function findFourTeams(array $teams) : array {
-        
-    //     $query = $this->db->prepare("SELECT *,
-    //                                  m.url AS logo_url
-    //                                 FROM teams t
-    //                                 JOIN media m ON m.id = t.logo");
-                                    
-    //     $query->execute();
-        
-    //     $result = $query->fetchAll(PDO::FETCH_ASSOC);
-        
-    //     $teams = [];
-        
-    //     for(int $i = 0; $id <= 3; $i++) {
-    //         $teams[] = new Team(
-    //         $result["name"],
-    //         $result["description"],
-    //         $result["logo_url"]
-    //         );
-    //     }
-        
-    //     return $teams,
-        
-    // } 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     }
  

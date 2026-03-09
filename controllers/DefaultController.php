@@ -10,10 +10,10 @@ class DefaultController extends AbstractController
         $manager = new PlayerManager();
         $players = $manager->find3Players();
         
-        $this->render("home"->["players" => $players]);
+        $this->render("home", ["players" => $players]);
     }
         
-    }
+    
     
     public function match() : void {
         
