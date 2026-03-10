@@ -6,92 +6,59 @@ class GameManager extends AbstractManager {
         parent::__construct();
     }
     
-    public function findOne(id $id) : Game {
-        
-        $query = $this->db->prepare("SELECT 
-        t1.name AS team1,
-        t2.name AS team2,
-        g.datetime,
-        g.winner
-         FROM games g
-        JOIN teams t1 ON g.team_1 = t1.id
-        JOIN teams t2 ON g.team_2 = t2.id
-        WHERE g.id = :id");
-        
-        $parameters = [
-            "id" => $id
-            ];
-            
-        $query->execute($parameters);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-        
-        $game = new Player(
-            $result["name"],
-            $result["datetime"],
-            $result["team_1"],
-            $result["team_2"],
-            $result["winner"]
-            );
-            
-        return $game;
-    
-    }
-    
-    //*************************
-    //***********************
-    
-    public function findAll(array $teams) : array {
-       
-       
-       $query = $this->db->prepare("SELECT 
-    g.id,
-    t1.name AS team1,
-    t2.name AS team2,
-    tw.name AS winner,
-    g.datetime
-    FROM games g
-    JOIN teams t1 ON g.team_1 = t1.id
-    JOIN teams t2 ON g.team_2 = t2.id");
-       
-       $query->execute();
-           
-        $results = $query->FetchAll(PDO::FETCH_ASSOC);
-        
-        $teams = [];
-        
-        foreach($results as $result) {
-            $games[] = new Game(
-            $result["name"],
-            $result["datetime"],
-            $result["team_1"],
-            $result["team_2"],
-            $result["winner"]
-            );
-        }
-        
-        return $games;
-    }
-    
-    
-    public function findLastGames(): array
+public function findLastGame(): ?Game
 {
-    $sql = "
-        SELECT 
-            g.datetime,
-            t1.name AS team1,
-            t2.name AS team2
-        FROM games g
-        JOIN teams t1 ON g.team_1 = t1.id
-        JOIN teams t2 ON g.team_2 = t2.id
-        ORDER BY g.datetime DESC
-        LIMIT 3
-    ";
+    $sql = "SELECT 
+            g.id,
+            g.name,
+            g.date,
 
-    $query = $this->db->prepare($sql);
-    $query->execute();
+            t1.id AS team1_id,
+            t1.name AS team1_name,
 
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+            t2.id AS team2_id,
+            t2.name AS team2_name
+
+            FROM games g
+
+            JOIN teams t1 ON g.team_1 = t1.id
+            JOIN teams t2 ON g.team_2 = t2.id
+
+            ORDER BY g.date DESC
+            LIMIT 1";
+
+    $stmt = $this->db->query($sql);
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        return null;
+    }
+
+    $team1 = new Team(
+        $row['team1_id'],
+        $row['team1_name'],
+        "",
+        null
+    );
+
+    $team2 = new Team(
+        $row['team2_id'],
+        $row['team2_name'],
+        "",
+        null
+    );
+
+    $game = new Game(
+        $row['id'],
+        $row['name'],
+        new DateTime($row['date']),
+        $team1,
+        $team2,
+        null
+    );
+
+    return $game;
 }
-    
+
 }
-    ?>

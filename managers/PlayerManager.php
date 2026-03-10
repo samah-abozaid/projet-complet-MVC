@@ -6,74 +6,94 @@ class PlayerManager extends AbstractManager {
         parent::__construct();
     }
 
-    // Trouver un joueur par ID
-    public function findOne(int $id): ?array
-    {
-        $sql = "
-            SELECT 
-                players.nickname,
-                players.bio,
-                media.url AS portrait_url,
-                teams.name AS team_name
-            FROM players
-            JOIN media ON players.portrait = media.id
-            JOIN teams ON players.team = teams.id
-            WHERE players.id = :id
-        ";
-
-        $query = $this->db->prepare($sql);
-        $query->execute(["id" => $id]);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-
-        if (!$result) {
-            return null;
-        }
-
-        return $result;
-    }
-
-
-    // Tous les joueurs
     public function findAll(): array
     {
-        $sql = "
-            SELECT 
-                players.id AS player_id,
-                players.nickname,
-                media.url AS portrait_url,
-                teams.name AS team_name
-            FROM players
-            JOIN media ON players.portrait = media.id
-            JOIN teams ON players.team = teams.id
-        ";
+        $db = Database::connect();
 
-        $query = $this->db->prepare($sql);
-        $query->execute();
+        $sql = "SELECT p.*, 
+                m.id as media_id, m.url, m.alt,
+                t.id as team_id, t.name
+                FROM players p
+                LEFT JOIN media m ON p.portrait = m.id
+                LEFT JOIN teams t ON p.team = t.id";
 
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $db->query($sql);
+
+        $players = [];
+
+        while($row = $stmt->fetch())
+        {
+            $media = null;
+
+            if($row['media_id']){
+                $media = new Media(
+                    $row['media_id'],
+                    $row['url'],
+                    $row['alt']
+                );
+            }
+
+            $team = null;
+
+            if($row['team_id']){
+                $team = new Team(
+                    $row['team_id'],
+                    $row['name'],
+                    "",
+                    null
+                );
+            }
+
+            $players[] = new Player(
+                $row['id'],
+                $row['nickname'],
+                $row['bio'],
+                $media,
+                $team
+            );
+        }
+
+        return $players;
+    }
+    
+    
+    
+    public function findHomePlayers(): array
+{
+    $sql = "SELECT p.id, p.nickname, p.bio,
+            m.id AS media_id, m.url, m.alt
+            FROM players p
+            LEFT JOIN media m ON p.portrait = m.id
+            LIMIT 3";
+
+    $stmt = $this->db->query($sql);
+
+    $players = [];
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+        $media = null;
+
+        if ($row['media_id']) {
+            $media = new Media(
+                $row['media_id'],
+                $row['url'],
+                $row['alt']
+            );
+        }
+
+        $player = new Player(
+            $row['id'],
+            $row['nickname'],
+            $row['bio'],
+            $media,
+            null
+        );
+
+        $players[] = $player;
     }
 
-
-    // 3 joueurs seulement
-   public function find3Players(): array
-{
-    $sql = "
-        SELECT 
-            players.nickname,
-            media.url AS portrait_url,
-            teams.name AS team_name
-        FROM players
-        JOIN media ON players.portrait = media.id
-        JOIN teams ON players.team = teams.id
-        LIMIT 3
-    ";
-
-    $query = $this->db->prepare($sql);
-    $query->execute();
-
-    
-    $players=$query->fetchAll(PDO::FETCH_ASSOC);
-    return  $players;
+    return $players;
+}
 }
 
-}

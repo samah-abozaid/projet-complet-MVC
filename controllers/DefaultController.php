@@ -3,18 +3,21 @@
 class DefaultController extends AbstractController
 {
 
- public function home(): void
+
+ function home(): void
 {
     $manager = new PlayerManager();
-    $players = $manager->find3Players();
+    $players = $manager->findHomePlayers();
 
-    if (!$players) {
-        $players = [];
-    }
+    $teamManager = new TeamManager();
+    $teams = $teamManager->findLastTeams(2);
 
-    $this->render("home", ["players" => $players]);
+    // On inclut $teams dans le rendu
+    $this->render("home", [
+        "players" => $players,
+        "teams" => $teams
+    ]);
 }
-        
     
     
     public function match() : void {

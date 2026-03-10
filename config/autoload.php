@@ -3,7 +3,7 @@
 
 require "models/Player.php";
 require "models/Team.php";
-
+require "models/Media.php";
 require "managers/AbstractManager.php";
 require "managers/PlayerManager.php";
 require "managers/TeamManager.php";
